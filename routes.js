@@ -38,6 +38,7 @@ router.post('/forgotPwdMover',moverController.forgotPassword)//done
 router.post('/addRate/:mover_id',moverrate.addRate)//done
 router.post('/viewRateByMover/:mover_id',moverrate.viewRatesByMover)//done
 router.post('/editRateById/:id',moverrate.editRateById)//done
+router.post('/viewMoverRequests',moverController.viewMoverRequests)//
 
 
 

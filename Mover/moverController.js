@@ -229,7 +229,166 @@ const showMoverById=(req,res)=>{
 }
 
 
+// View packer bookings by id
+const showBookingReqs=(req,res)=>{
+  booking.find({mid:req.params.id,status:'pending'}).populate('pid').exec()
+  .then(data=>{
+    
+    res.json({
+        status:200,
+        msg:"Data obtained successfully",
+        data:data
+    })
+  
+}).catch(err=>{
+    res.json({
+        status:500,
+        msg:"Data not Inserted",
+        Error:err
+    })
+})
 
+}
+
+//update payment
+
+const generatePayment=(req,res)=>{
+  luggage.findByIdAndUpdate({_id:req.params.id},{
+    paymenttype:req.body.paymenttype,
+    paymentStatus:req.body.paymentStatus
+  }).exec()
+  .then(data=>{
+    
+    res.json({
+        status:200,
+        msg:"Data obtained successfully",
+        data:data
+    })
+  
+}).catch(err=>{
+    res.json({
+        status:500,
+        msg:"Data not Inserted",
+        Error:err
+    })
+})
+
+}
+
+// add reviews to mover by  packerid
+const addReview=(req,res)=>{
+  let review=req.body.review
+  let arr=[]
+  movers.findById({_id:req.body.id}).exec()
+  .then(data=>{
+  arr=data.reviews
+  arr.push(review)
+  console.log(arr);
+  movers.findByIdAndUpdate({_id:req.body.id},{
+    reviews:arr
+  }).exec()
+  .then(data=>{
+    
+    res.json({
+        status:200,
+        msg:"Data obtained successfully",
+        data:data
+    })
+  
+}).catch(err=>{
+    res.json({
+        status:500,
+        msg:"Data not Inserted",
+        Error:err
+    })
+})
+})
+}
+
+
+// add rating to mover by  packerid
+const addRating=(req,res)=>{
+  let newRate=parseInt(req.body.rating)
+  let rating=0
+  movers.findById({_id:req.body.id}).exec()
+  .then(data=>{
+    rating=data.rating
+    if(data.rating!=0)
+  rating=(rating+newRate)/2
+  else
+  rating=newRate
+  console.log(rating);
+  movers.findByIdAndUpdate({_id:req.body.id},{
+    rating:rating
+  }).exec()
+  .then(data=>{
+    
+    res.json({
+        status:200,
+        msg:"Data obtained successfully",
+        data:data
+    })
+  
+}).catch(err=>{
+    res.json({
+        status:500,
+        msg:"Data not Inserted",
+        Error:err
+    })
+})
+})
+}
+
+
+
+
+//view order details for Movers
+const viewAcceptedOrderByMoverId=(req,res)=>{
+  luggage.find({mid:req.params.id,status:"approved"}).exec()
+  .then(data=>{
+    
+    res.json({
+        status:200,
+        msg:"Data obtained successfully",
+        data:data
+    })
+  
+}).catch(err=>{
+    res.json({
+        status:500,
+        msg:"Data not Inserted",
+        Error:err
+    })
+})
+
+}
+
+//View all  Mover requests
+
+const viewMoverRequests=(req,res)=>{
+  movers.find({isactive:false}).exec()
+  .then(data=>{
+    if(data.length>0){
+    res.json({
+        status:200,
+        msg:"Data obtained successfully",
+        data:data
+    })
+  }else{
+    res.json({
+      status:200,
+      msg:"No Data obtained "
+  })
+  }
+}).catch(err=>{
+    res.json({
+        status:500,
+        msg:"Data not obtained",
+        Error:err
+    })
+})
+
+}
 //Mover Approval by admin
 const ApproveMover=(req,res)=>{
 
@@ -254,7 +413,47 @@ const ApproveMover=(req,res)=>{
 
 
 
+const approveOrder=(req,res)=>{
+  luggage.findByIdAndUpdate({_id:req.params.id},
+    {
+    status:"approved"}).exec()
+  .then(data=>{
+    
+    res.json({
+        status:200,
+        msg:"Data Updated successfully"
+    })
+  
+}).catch(err=>{
+    res.json({
+        status:500,
+        msg:"Data not Inserted",
+        Error:err
+    })
+})
 
-module.exports={registerMover,login,requireAuth,viewMovers,showMoverById,editMoversById,forgotPassword,deleteMoverById,
-ApproveMover,
 }
+
+const rejectOrder=(req,res)=>{
+  luggage.findByIdAndUpdate({_id:req.params.id},
+    {
+    status:"rejected"}).exec()
+  .then(data=>{
+    
+    res.json({
+        status:200,
+        msg:"Data Updated successfully"
+    })
+  
+}).catch(err=>{
+    res.json({
+        status:500,
+        msg:"Data not Inserted",
+        Error:err
+    })
+})
+
+}
+module.exports={registerMover,login,requireAuth,viewMovers,showMoverById,editMoversById,forgotPassword,deleteMoverById,
+showBookingReqs,addReview,addRating,generatePayment,viewAcceptedOrderByMoverId,viewMoverRequests,ApproveMover,
+approveOrder,rejectOrder}
